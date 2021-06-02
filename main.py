@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import face_recognition
+import os
 
 
 def null():
@@ -55,6 +56,7 @@ while True:
     if k%256 == 32:
         imageName = f"pymix-filter-{token}.png"
         cv2.imwrite(imageName, camera)
+        cv2.putText(camera, "Loading...", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
 
         scores = []
         # Code to compare faces
@@ -66,19 +68,23 @@ while True:
             # -------------------------------------------------------------------------
             results = face_recognition.compare_faces(encodedSnapshot, encodedAsset)
             faceDistance = face_recognition.face_distance(encodedSnapshot, encodedAsset)
-            # print(results, faceDistance)
+
+            # Rounding the face distances
             roundedFaceDistance = round(faceDistance[0], 3)
             # -------------------------------------------------------------------------
             scores.append(roundedFaceDistance)
+            print("...")
 
         print(scores)
         lowestScore = min(scores)
         lowestScoreIndex = scores.index(lowestScore)
-        print(lowestScoreIndex)
-        cv2.imshow("Match", coloredFootballAssets[lowestScoreIndex]["img"])
+        footballMatch = coloredFootballAssets[lowestScoreIndex]["img"]
+        cv2.putText(footballMatch, "We Found Your Match!", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+        cv2.imshow("Match", footballMatch)
         cv2.waitKey(0)
 
     elif k%256 == 27:
+        os.remove("pymix-filter-0.png")
         break
 
 # When everything is done, release the capture
